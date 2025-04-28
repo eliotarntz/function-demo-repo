@@ -1,0 +1,15 @@
+{
+  "name": "function-demo",
+  "version": "1.0.0",
+  "description": "Simple HTTP Function for Demo",
+  "main": "index.js",
+  "scripts": {
+  "start": "functions-framework --target=helloHttp"
+  },
+  "dependencies": {
+  "@google-cloud/functions-framework": "^3.0.0"
+  },
+  "engines": {
+  "node": ">=22"
+  }
+  }

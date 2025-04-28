@@ -1,0 +1,31 @@
+# Sample config mimicking user input with mixed case
+function:
+  name: 'demo-http-function-${SHORT_SHA}' # Use SHORT_SHA from Cloud Build for uniqueness
+  region: 'us-central1' # Choose a region
+  entryPoint: 'helloHttp' # Match the export in index.js
+  runtime: 'nodejs18' # Or nodejs20, nodejs22 etc.
+  trigger:
+    type: 'http' # HTTP Trigger
+
+  buildConfig:
+    # Intentionally mixed case - API accepts either
+    service_account: 'YOUR_BUILD_SERVICE_ACCOUNT_EMAIL' # Mandatory for demo validation
+    # Example: projects/your-project-id/serviceAccounts/your-custom-builder@your-project-id.iam.gserviceaccount.com
+
+  serviceConfig:
+    # Intentionally mixed case - API accepts either
+    availableMemoryMb: 256
+    maxInstanceCount: 2
+    # This is the RUNTIME service account for the function
+    service_account_email: 'YOUR_RUNTIME_SERVICE_ACCOUNT_EMAIL' # Mandatory for demo validation
+    # Example: function-runtime-sa@your-project-id.iam.gserviceaccount.com
+    environmentVariables:
+      demoEnvVar: 'ValueFromConfig'
+    environment: GEN_2 # Specify Gen 2 function
+
+# --- Our Custom CI/CD Validation Requirements ---
+# We require these specific fields to be present, regardless of API flexibility
+validation_required_fields:
+  # Use the NORMALIZED (snake_case) path here for consistency in validation script
+  - 'function.build_config.service_account'
+  - 'function.service_config.service_account_email'
