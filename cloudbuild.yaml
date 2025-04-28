@@ -5,18 +5,20 @@ steps:
   args: ['install', 'pyyaml']
 
 # Step 2: Normalize the configuration file keys
-- name: 'python:3.9-slim'
-  entrypoint: python
-  args:
-    - 'normalize_keys.py'
-    - 'function_config.yaml' # Input: original config
-  id: 'Normalize-Config'
-  # Output of this step (stdout) is json, save to workspace file
-- name: 'bash' # Temporary step to capture stdout to file
-  args: ['-c', 'echo "$$0" > normalized_config.json']
-  # Use $$ to escape $ for bash variable substitution within cloud build
-  env:
-  - 'NORMALIZED_OUTPUT=$$(steps.Normalize-Config.outputs.stdout)'
+    - name: 'python:3.9-slim'
+      entrypoint: 'bash' # Use bash to run multiple commands
+      args:
+        - '-c'
+        - |
+          pip install pyyaml && \
+          python normalize_keys.py function_config.yaml # Input: original config
+      id: 'Normalize-Config'
+      # Output of this step (stdout) is json, save to workspace file
+    # This step remains the same, capturing output to a file
+    - name: 'bash'
+      args: ['-c', 'echo "$$0" > normalized_config.json']
+      env:
+      - 'NORMALIZED_OUTPUT=$$(steps.Normalize-Config.outputs.stdout)'
 
 # Step 3: Validate the *normalized* configuration
 - name: 'python:3.9-slim'
