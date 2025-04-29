@@ -22,6 +22,10 @@ if __name__ == "__main__":
     try:
         with open(input_file, 'r') as f:
             normalized_config = json.load(f)
+        
+        if "error" in normalized_config:
+            print(f"Error in previous step: {normalized_config['error']}", file=sys.stderr)
+            sys.exit(1)
 
         # Get the list of required fields from the config itself
         required_fields = get_value_by_path(normalized_config, 'validation_required_fields')
