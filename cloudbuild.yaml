@@ -32,7 +32,7 @@ steps:
       - "--runtime=nodejs18"
       - "--trigger-http"
       - "--no-allow-unauthenticated"
-      - "--gen2"
+      - "--gen1"
       - "--set-env-vars=demoEnvVar=ValueFromConfig"
       - "--source=."
 
