@@ -1,66 +1,42 @@
 steps:
-  # Step 1: Install dependencies (Python for scripts)
-  - name: 'python:3.9-slim' # Use a slim python image
-    entrypoint: pip
-    args: ['install', 'pyyaml']
-    id: 'Install-Dependencies'
-
-  # Step 2: Normalize the configuration file keys
+  # Step 1 – Normalise keys and save result
   - name: 'python:3.9-slim'
+    id: Normalize
     entrypoint: bash
     args:
-      - '-c'
+      - -c
       - |
         pip install pyyaml
-        python normalize_keys.py function_config.yaml
-    id: 'Normalize-Config'
-  # Output of this step (stdout) is json, save to workspace file
-  - name: 'bash' # Temporary step to capture stdout to file
-    args: ['-c', 'echo "$$NORMALIZED_OUTPUT" > normalized_config.json']
-    # Use $$ to escape $ for bash variable substitution within cloud build
-    env:
-      - 'NORMALIZED_OUTPUT=$$(steps.Normalize-Config.outputs.stdout)'
+        python normalize_keys.py function_config.yaml \
+          > /workspace/normalized_config.json
 
-  # Step 3: Validate the *normalized* configuration
+  # Step 2 – Validate the normalised config
   - name: 'python:3.9-slim'
+    id: Validate
     entrypoint: bash
     args:
-      - '-c'
+      - -c
       - |
         pip install pyyaml
-        python validate_config.py normalized_config.json
-    id: 'Validate-Config'
+        python validate_config.py /workspace/normalized_config.json
 
-  # Step 4: Deploy Function using gcloud (Only runs if validation passed)
-  # We use the original config file values, but could also parse the normalized one
-  # Using --source=. is simpler for demo than complex flag generation
-  # Note: Substitute values directly or use Cloud Build substitutions
+  # Step 3 – Deploy the Cloud Function (runs only if validation passed)
   - name: 'gcr.io/cloud-builders/gcloud'
+    id: Deploy-Function
     args:
-      - 'functions'
-      - 'deploy'
-      # Read values from the original YAML using yq or similar, or hardcode for demo:
-      # For demo simplicity, we might hardcode, but ideally parse function_config.yaml
-      - 'demo-http-function-${SHORT_SHA}' # Function name from config (needs substitution)
-      - '--region=us-central1' # Hardcoded from config for demo
-      - '--entry-point=helloHttp' # Hardcoded from config for demo
-      - '--runtime=nodejs18' # Hardcoded from config for demo
-      - '--trigger-http'
-      - '--no-allow-unauthenticated' # Best practice unless public access needed
-      - '--gen2' # Specify Gen 2
-      # --- Get these from config ---
-      # Ideally, parse function_config.yaml here to get the actual values
-      # For demo simplicity, ensure values match your function_config.yaml
-      - '--build-service-account=YOUR_BUILD_SERVICE_ACCOUNT_EMAIL' # Replace!
-      - '--service-account=YOUR_RUNTIME_SERVICE_ACCOUNT_EMAIL' # Replace!
-      - '--set-env-vars=demoEnvVar=ValueFromConfig' # Hardcoded from config for demo
-      # --- Deployment source ---
-      - '--source=.' # Deploy source code from the current directory
-    id: 'Deploy-Function'
-
-# Optional: Define substitutions if needed, e.g., for region or runtime
-# substitutions:
-#   _REGION: 'us-central1'
+      - functions
+      - deploy
+      - "demo-http-function-${SHORT_SHA}"     # from config
+      - "--region=us-central1"
+      - "--entry-point=helloHttp"
+      - "--runtime=nodejs18"
+      - "--trigger-http"
+      - "--no-allow-unauthenticated"
+      - "--gen2"
+      - "--build-service-account=YOUR_BUILD_SERVICE_ACCOUNT_EMAIL"
+      - "--service-account=YOUR_RUNTIME_SERVICE_ACCOUNT_EMAIL"
+      - "--set-env-vars=demoEnvVar=ValueFromConfig"
+      - "--source=."
 
 options:
-  logging: CLOUD_LOGGING_ONLY # Standard logging
+  logging: CLOUD_LOGGING_ONLY
