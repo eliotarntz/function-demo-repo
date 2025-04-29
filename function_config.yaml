@@ -9,7 +9,7 @@ function:
 
   buildConfig:
     # Intentionally mixed case - API accepts either
-    service_account: 'YOUR_BUILD_SERVICE_ACCOUNT_EMAIL' # Mandatory for demo validation
+    service_account: 'sandbox-457523@appspot.gserviceaccount.com' # Mandatory for demo validation
     # Example: projects/your-project-id/serviceAccounts/your-custom-builder@your-project-id.iam.gserviceaccount.com
 
   serviceConfig:
@@ -17,7 +17,7 @@ function:
     availableMemoryMb: 256
     maxInstanceCount: 2
     # This is the RUNTIME service account for the function
-    service_account_email: 'YOUR_RUNTIME_SERVICE_ACCOUNT_EMAIL' # Mandatory for demo validation
+    service_account_email: '715394523191-compute@developer.gserviceaccount.com' # Mandatory for demo validation
     # Example: function-runtime-sa@your-project-id.iam.gserviceaccount.com
     environmentVariables:
       demoEnvVar: 'ValueFromConfig'
