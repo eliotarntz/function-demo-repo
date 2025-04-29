@@ -21,7 +21,7 @@ def normalize_keys_recursive(obj):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Usage: python normalize_keys.py <input_yaml_file>")
+        print(json.dumps({"error": "Usage: python normalize_keys.py <input_yaml_file>"}))
         sys.exit(1)
 
     input_file = sys.argv[1]
@@ -36,5 +36,5 @@ if __name__ == "__main__":
         print(json.dumps(normalized_data, indent=2))
 
     except Exception as e:
-        print(f"Error processing {input_file}: {e}", file=sys.stderr)
+        print(json.dumps({"error": f"Error processing {input_file}: {e}"}))
         sys.exit(1)
