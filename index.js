@@ -1,7 +1,5 @@
-/**
- * HTTP handler for the schema-demo function.
- * Responds with a simple JSON message.
- */
-exports.handler = (req, res) => {
-  res.status(200).json({message: 'Hello from the schema-demo function!'});
+exports.helloHttp = (req, res) => {
+  const msg = req.query.message || req.body.message || 'Hello World!';
+  res.status(200).send(`Function received: ${msg}`);
 };
+
