@@ -33,8 +33,6 @@ steps:
       - "--trigger-http"
       - "--no-allow-unauthenticated"
       - "--gen2"
-      - "--build-service-account=sandbox-457523@appspot.gserviceaccount.com"
-      - "--service-account=sandbox-457523@appspot.gserviceaccount.com"
       - "--set-env-vars=demoEnvVar=ValueFromConfig"
       - "--source=."
 
